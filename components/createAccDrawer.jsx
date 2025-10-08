@@ -1,6 +1,6 @@
 'use client'
 
-import { React, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger, } from '@/components/ui/drawer'
 import { Button } from '@/components/ui/button'
@@ -10,6 +10,10 @@ import { accountSchema } from '../app/lib/schema'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from '@/components/ui/switch'
+import useFetch from '@/hooks/use-fetch'
+import { Loader2 } from 'lucide-react'
+import { createAcc } from '@/server/dashboard'
+import { toast } from 'sonner'
 
 
 
@@ -31,9 +35,25 @@ const createAccDrawer = ({ children }) => {
 
       }
     });
+const { data: newAccount, error , fn:createAccountFn, loading:createAccountLoading } = 
+    useFetch(createAcc)
 
-const onSubmit = (data) => {
-  console.log(data);
+useEffect(() => {
+  if(newAccount && !createAccountLoading){
+    toast.success("Account created successfully");
+    reset();
+    setOpen(false);
+  }
+}, [createAccountLoading, newAccount])
+
+useEffect( () => {
+    if(error){
+      toast.error(error.message || "Failed to create account")
+  }
+}, [error])
+
+const onSubmit =async(data) => {
+ await createAccountFn(data)
 }
 
   return (
@@ -106,7 +126,11 @@ const onSubmit = (data) => {
                     </Button>
                   </DrawerClose>
                   <Button type="submit">
-                    Create Account
+                    { createAccountLoading ? (<>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
+                    Creating... </>) : (
+                      "Create Account"
+                    )  }
                   </Button>
                 </DrawerFooter>
 
