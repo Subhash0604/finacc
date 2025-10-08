@@ -3,7 +3,8 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { success } from "zod";
+import { includes } from "zod";
+
 
 
 const serialize = (obj) => {
@@ -11,7 +12,11 @@ const serialize = (obj) => {
 
     if (obj.balance) {
         serialized.balance = obj.balance.toNumber();
+    } 
+    if (obj.amount) {
+        serialized.amount = obj.amount.toNumber();
     }
+    return serialized;
 }
 
 
@@ -67,4 +72,31 @@ export async function createAcc(data) {
     } catch (err) {
         throw new Error(err.message);
     }
+}
+
+export async function getAccounts() {
+    const { userId } = await auth();
+    if (!userId) throw new Error("Unauthorized");
+
+    const user = await db.user.findUnique({
+
+        where: { clerkUserId: userId }
+    });
+
+    if (!user) throw new Error("Unauthorized");
+ 
+    const accounts = await db.account.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        include: {
+            _count:{
+                select: {
+                    transactions: true
+                }
+            }
+        }
+    });
+
+     const serializedAcc = serialize(account);
+     return serializedAcc;
 }
