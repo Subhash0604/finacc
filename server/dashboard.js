@@ -97,6 +97,6 @@ export async function getAccounts() {
         }
     });
 
-     const serializedAcc = serialize(account);
+     const serializedAcc = accounts.map(serialize);
      return serializedAcc;
 }
