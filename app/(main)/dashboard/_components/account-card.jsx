@@ -1,19 +1,54 @@
-
+"use client"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
-import React from 'react'
+import React, { useEffect } from 'react'
 import  Link  from 'next/link';
+import useFetch from '@/hooks/use-fetch';
+import { updateDefaultAccount } from '@/server/accounts';
+import { toast } from 'sonner';
 
 const AccountCard = ({ account }) => {
     const { name, type, balance, id, isDefault } = account;
+
+    const {
+        loading: updateDefaultLoading,
+        fn:updateDefaultFn,
+        data: updateAccount,
+        error,
+    } = useFetch(updateDefaultAccount) 
+
+    const handleDefaultChange = async(event)=> {
+        event.preventDefault();
+
+        if(isDefault){
+            toast.warning("Must have atleast one default account")
+            return;
+        }
+        await updateDefaultFn(id);  
+    }   
+
+   useEffect(() => {
+        if(updateAccount?.success){
+            toast.success("Default account updated successfully");
+        }
+   }, [updateAccount, updateDefaultLoading]) 
+
+   
+   useEffect(() => {
+        if(error){
+            toast.error(error.message || "Failed to update Default Account ");
+        }
+   }, [error]) 
+
+
     return (
         <div>
             <Card className="hover:shadow-md transition-shadow cursor-pointer group relatives">
                 <Link href={`/account/${id}`}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium capitalize">{name}</CardTitle>
-                    <Switch checked={isDefault} className='cursor-pointer' />
+                    <Switch checked={isDefault} className='cursor-pointer' onClick={handleDefaultChange} disabled={updateDefaultLoading}/>
                 </CardHeader>
                 <CardContent>
                     <div className='text-2xl font-bold'>
