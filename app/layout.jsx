@@ -18,7 +18,7 @@ export default function RootLayout({ children }) {
       <html lang="en"  className={inter.className}>
         <body>
           <Header />
-          <main className="min-h-screen">{children}</main>
+          <main className="pt-30 min-h-screen">{children}</main>
           <Toaster richColors/>
           <footer className="bg-red-50">
             <div className="container mx-auto py-12 text-center text-gray-600">

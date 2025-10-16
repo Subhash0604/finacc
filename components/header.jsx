@@ -10,11 +10,12 @@ const Header = async() => {
   const user = await AuthUser();
   console.log(user);
   return (
-    <div  className='fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b'>
+    <header  className='fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b'>
       <nav className='container mx-auto px-4 py-4 flex items-center justify-between'>
      
         <Link href="/">
         <Image 
+        
         src={"/Preview.png"}
         alt="finac logo"
         height={60}
@@ -34,7 +35,7 @@ const Header = async() => {
           </SignedOut>
 
           <SignedIn>
-              <Link href={"/dashboard"} className='text-gray600 hover:text-red-600 flex items-center gap-2'>
+              <Link href={"/dashboard"} className='text-gray-600 hover:text-red-600 flex items-center gap-2'>
                 <Button variant="outline">
                   <LayoutDashboard size={18}/>
                   <span className='hidden md:inline'>
@@ -61,7 +62,7 @@ const Header = async() => {
           </SignedIn>
         </div>
      </nav> 
-    </div>
+    </header>
   )
 }
 
