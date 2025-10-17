@@ -2,7 +2,7 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { includes } from "zod";
+ 
  
 
 const serialize = (obj) => {
@@ -50,7 +50,7 @@ export async function updateDefaultAccount(accountId) {
 export async function getAccountsTransaction(accountId){
     const { userId } = await auth();
         if (!userId) throw new Error("Unauthorized");
-
+            
         const user = await db.user.findUnique({
 
             where: { clerkUserId: userId }
@@ -58,7 +58,7 @@ export async function getAccountsTransaction(accountId){
 
         if (!user) throw new Error("Unauthorized");
 
-        const account = await db.account.findUnique({
+        const account = await db.account.findUnique ({
             where: { id: accountId, userId: user.id},
             include:{
                 transactions: {
