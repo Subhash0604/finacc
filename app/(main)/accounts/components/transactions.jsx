@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from '@/components/ui/checkbox'
 import { format } from 'date-fns';
@@ -13,6 +13,11 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import useFetch from '@/hooks/use-fetch';
+import { deleteTransactions } from '@/server/accounts';
+import { BarLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 const RECURRING_INTERVALS = {
     DAILY: "daily",
@@ -35,24 +40,57 @@ const TransactionTable = ({ transactions = [] }) => {
     const [search, setSearch] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
     const [recurringFilter, setRecurringFilter] = useState("");
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 10;
+
+
+    const { loading: deleteLoading,
+        fn: deleteFn,
+        data: deleted
+    } = useFetch(deleteTransactions)
 
 
     const filterTransactions = useMemo(() => {
         let filtered = [...transactions];
-        if(search){
+        if (search) {
             filtered = filtered.filter((transaction) => transaction.description?.toLowerCase().includes(search.toLowerCase()));
         }
 
-        if(recurringFilter){
+        if (recurringFilter) {
             filtered = filtered.filter((transaction) => recurringFilter === "recurring" ? transaction.isRecurring : !transaction.isRecurring);
         }
 
-        if(filterCategory){
+        if (filterCategory) {
             filtered = filtered.filter((transaction) => transaction.type === filterCategory);
         }
+
+        filtered.sort((a, b) => {
+            let compare = 0;
+
+            switch (sort.field) {
+                case "date":
+                    compare = new Date(a.date) - new Date(b.date);
+                    break;
+                case "amount":
+                    compare = a.amount - b.amount;
+                    break;
+                case "category":
+                    compare = a.category.localeCompare(b.category);
+                    break;
+                default:
+                    compare = 0;
+            }
+            return sort.direction === "asc" ? compare : -compare;
+        })
         return filtered;
     }, [transactions, search, filterCategory, recurringFilter, sort]);
 
+    const totalPages = Math.ceil(filterTransactions.length / rowsPerPage);
+
+    const paginatedTransactions = useMemo(() => {
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        return filterTransactions.slice(startIndex, startIndex + rowsPerPage);
+    }, [filterTransactions, currentPage, rowsPerPage]);
 
     // console.log(transactions)
     const handleSort = (field) => {
@@ -72,9 +110,17 @@ const TransactionTable = ({ transactions = [] }) => {
     }
 
     const handleDeleteAll = () => {
-        // deleteFn(selectIds);
-        setSelectIds([]);
-    }
+
+        deleteFn(selectIds);
+
+    };
+
+    useEffect(() => {
+        if (deleted && !deleteLoading) {
+            toast.error("Transactions deleted successfully");
+            setSelectIds([]);
+        }
+    }, [deleted, deleteLoading])
 
     const handleClearFilters = () => {
         setSearch("");
@@ -84,6 +130,11 @@ const TransactionTable = ({ transactions = [] }) => {
     }
     return (
         <div className='space-y-4'>
+            {deleteLoading && (
+                <div className="gradient-bar">
+                    <BarLoader className="mt-4" width="100%" />
+                </div>
+            )}
             <div className='flex flex-col sm:flex-row gap-4'>
                 <div className='relative flex-1'>
                     <Search className='absolute left-2 top-2.5 h-4 w-4 text-muted-foreground' />
@@ -93,7 +144,7 @@ const TransactionTable = ({ transactions = [] }) => {
                         onChange={(e) => setSearch(e.target.value)}
                         className='pl-8' />
                 </div>
- 
+
                 <div className='flex gap-2'>
                     <Select value={filterCategory} onValueChange={setFilterCategory}>
                         <SelectTrigger>
@@ -118,15 +169,15 @@ const TransactionTable = ({ transactions = [] }) => {
                     {selectIds.length > 0 && (
                         <div>
                             <Button variant="destructive"
-                            size="sm" onClick={handleDeleteAll}>
-                                <Trash className='h-4 w-2 mr-1'/>
+                                size="sm" onClick={handleDeleteAll}>
+                                <Trash className='h-4 w-2 mr-1' />
                                 Delete({selectIds.length})
                             </Button>
                         </div>
                     )}
                     {(search || filterCategory || recurringFilter) && (
                         <Button variant='outline' size="icon" onClick={handleClearFilters} title="Clear Filters">
-                            <X className='h-3 w-3'/>
+                            <X className='h-3 w-3' />
                         </Button>
                     )}
                 </div>
@@ -169,14 +220,14 @@ const TransactionTable = ({ transactions = [] }) => {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filterTransactions.length === 0 ? (
+                        {paginatedTransactions.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={7} className="text-center text-muted-foreground">
                                     No Transactions Found
                                 </TableCell>
                             </TableRow>
                         ) : (
-                            filterTransactions.map((transaction) => (
+                            paginatedTransactions.map((transaction) => (
                                 <TableRow key={transaction.id}>
                                     <TableCell><Checkbox onCheckedChange={() => handleSelect(transaction.id)}
                                         checked={selectIds.includes(transaction.id)}
@@ -248,6 +299,34 @@ const TransactionTable = ({ transactions = [] }) => {
                     </TableBody>
                 </Table>
             </div>
+
+            {totalPages > 1 && (
+
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious href="#"
+                            onClick={(e) => {e.preventDefault(); setCurrentPage(p => Math.max(p, -1,1));}}
+                            disabled={currentPage === 1} />
+                            </PaginationItem>
+                            {Array.from({length: totalPages}, (_,i) => i + 1).map(page => (
+                        <PaginationItem key={page}>
+                            <PaginationLink href="#"
+                            isActive={currentPage === page}
+                            onClick={e => {e.preventDefault(); setCurrentPage(page)}}>{page}</PaginationLink>
+                        </PaginationItem>
+                            ))}
+                            {totalPages > 10 && <PaginationItem>
+                            <PaginationEllipsis />
+                        </PaginationItem>  }
+                        
+                        <PaginationItem>
+                            <PaginationNext href="#" onClick={e => {e.preventDefault(); setCurrentPage(p => Math.min(p +1, totalPages))}}
+                                disabled = {currentPage === totalPages}/>
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
         </div>
     )
 }

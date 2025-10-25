@@ -144,6 +144,7 @@
   }                                 
 }
 
+
 .hero-image-wrapper {
   perspective: 1000px;
 
@@ -157,4 +158,12 @@
 
 .hero-image.scrolled{
   transform: rotateX(0deg) scale(1) translateY(40px);
+}
+
+.gradient-bar {
+  background: linear-gradient(90deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
+  background-size: 400% 400%;
+  animation: gradientAnimation 8s ease infinite;
+  height: 4px;
+  border-radius: 4px;
 }

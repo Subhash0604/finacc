@@ -27,7 +27,13 @@ console.log(accountData)
           <p className='text-sm text-muted-foreground'>{account._count.transactions}Transactions</p>
         </div>
       </div>
-        <Suspense fallback={<BarLoader className='mt-4' width={"100%"} color="#9333ea" />}>
+
+
+        <Suspense fallback={
+          <div className='gradient-bar'>
+            <BarLoader className='mt-4' width='100%' />
+          </div>
+        }>
           <TransactionTable transactions={transactions} />
         </Suspense>
     </div>
