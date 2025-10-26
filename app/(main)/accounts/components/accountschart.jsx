@@ -1,11 +1,10 @@
 "use client";
+
 import { endOfDay, format, startOfDay, subDays } from 'date-fns';
 import React, { useMemo } from 'react'
 import { BarChart,Bar, CartesianGrid, Legend, Tooltip, ResponsiveContainer, XAxis, YAxis } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-
-
 
 const DATE_RANGES = {
     "7D": { label: 'Last 7 Days', days: 7 },
