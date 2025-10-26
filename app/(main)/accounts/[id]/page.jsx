@@ -4,10 +4,11 @@ import React, { Suspense } from 'react'
 
 import TransactionTable from '../components/transactions';
 import { BarLoader } from 'react-spinners';
+import AccountsChart from '../components/accountschart';
 
 const AccountsPage = async ({ params }) => {
   const accountData = await getAccountsTransaction(params.id);
-console.log(accountData)
+  console.log(accountData)
   if (!accountData) {
     return notFound();
   }
@@ -27,15 +28,21 @@ console.log(accountData)
           <p className='text-sm text-muted-foreground'>{account._count.transactions}Transactions</p>
         </div>
       </div>
-
-
-        <Suspense fallback={
-          <div className='gradient-bar'>
-            <BarLoader className='mt-4' width='100%' />
-          </div>
-        }>
-          <TransactionTable transactions={transactions} />
-        </Suspense>
+      
+      <Suspense fallback={
+        <div className='gradient-bar'>
+          <BarLoader className='mt-4' width='100%' />
+        </div>
+      }>
+        <AccountsChart transactions={transactions}/>
+      </Suspense>
+      <Suspense fallback={
+        <div className='gradient-bar'>
+          <BarLoader className='mt-4' width='100%' />
+        </div>
+      }>
+        <TransactionTable transactions={transactions} />
+      </Suspense>
     </div>
   )
 }
