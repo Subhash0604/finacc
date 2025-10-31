@@ -1,4 +1,4 @@
- import { defaultCategories } from '@/data/categories';
+import { defaultCategories } from '@/data/categories';
 import { getAccounts } from '@/server/dashboard'
 import React from 'react'
 import TransactionForm from '../_components/transactionForm';
