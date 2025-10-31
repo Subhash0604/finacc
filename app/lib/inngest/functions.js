@@ -55,7 +55,8 @@ export const checkBudget = inngest.createFunction(
            if(percentage >= 80 && 
             (!budget.lastAlertSent || isNewMonth(new Date(budget.lastAlertSent),new Date()))){
               
-              await sendMail({
+              try{
+                   await sendMail({
                 to: budget.user.email,
                 subject: `Budget Alert for ${defaultAcc.name}`,
                 react: Email({
@@ -69,6 +70,11 @@ export const checkBudget = inngest.createFunction(
                   }
                 })
               })
+              console.log("mail sent")
+              }catch(err){
+                  console.error("sent failed",err)
+              }
+             
 
 
               await db.budget.update({

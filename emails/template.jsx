@@ -45,7 +45,7 @@ export default function Email({
                 Hi <strong>{userName}</strong>,
               </Text>
               <Text style={styles.text}>
-                You’ve used <strong>{data?.percentage.toFixed(1)}%</strong> of your
+                You’ve used <strong>{(data?.percentage ?? 0).toFixed(1)}%</strong> of your
                 monthly budget. It might be a good time to review your expenses.
               </Text>
 
@@ -53,12 +53,12 @@ export default function Email({
               <Section style={styles.statsCard}>
                 <div style={styles.statRow}>
                   <Text style={styles.label}>Budget Amount</Text>
-                  <Text style={styles.value}>${data?.budgetAmount.toLocaleString()}</Text>
+                  <Text style={styles.value}>${(data?.budgetAmount ?? 0).toLocaleString()}</Text>
                 </div>
                 <Hr style={styles.divider} />
                 <div style={styles.statRow}>
                   <Text style={styles.label}>Spent So Far</Text>
-                  <Text style={styles.value}>${data?.totalExpenses.toLocaleString()}</Text>
+                  <Text style={styles.value}>${(data?.totalExpenses ?? 0).toLocaleString()}</Text>
                 </div>
                 <Hr style={styles.divider} />
                 <div style={styles.statRow}>
