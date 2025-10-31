@@ -12,7 +12,7 @@ import TransactionForm from '../_components/transactionForm';
         Add Transaction
       </h1>
 
-      <TransactionForm
+      <TransactionForm    
         accounts={accounts}
         categories={defaultCategories}
       />
