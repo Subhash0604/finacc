@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 
 
 
-const createAccDrawer = ({ children }) => {
+const CreateAccDrawer  = ({ children }) => {
 
   const [open, setOpen] = useState(false);
 
@@ -143,4 +143,4 @@ const onSubmit =async(data) => {
   )
 }
 
-export default createAccDrawer
+export default CreateAccDrawer;

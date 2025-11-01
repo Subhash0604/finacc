@@ -1,5 +1,5 @@
 import React from 'react'
-import CreateAccDrawer from '@/components/createAccDrawer'
+import CreateAccDrawer from '@/components/CreateAccDrawer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
 import { getAccounts } from '@/server/dashboard'
