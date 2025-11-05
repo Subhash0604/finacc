@@ -329,6 +329,6 @@ const TransactionTable = ({ transactions = [] }) => {
             )}
         </div>
     )
-}
+} 
 
 export default TransactionTable
