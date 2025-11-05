@@ -36,7 +36,7 @@ const TransactionTable = ({ transactions = [] }) => {
         direction: "desc",
 
     })
-
+    
     const [search, setSearch] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
     const [recurringFilter, setRecurringFilter] = useState("");
