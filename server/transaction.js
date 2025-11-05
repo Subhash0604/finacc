@@ -37,7 +37,7 @@ export async function addTransaction(data){
         const newBalance = account.balance.toNumber() + balanceChange;
 
         const transaction = await db.$transaction(async (tx) => {
-            const newTransaction = await transaction.create({
+            const newTransaction = await tx.transaction.create({
                 data:{
                     ...data,
                     userId: user.id,
@@ -80,4 +80,5 @@ export async function addTransaction(data){
             break
 
     }
+    return date;
  }  
