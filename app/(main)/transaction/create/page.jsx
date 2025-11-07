@@ -3,7 +3,6 @@ import { getAccounts } from '@/server/dashboard'
 import React from 'react'
 import { TransactionForm } from '../_components/transactionForm';
 
- 
  export default async function CreateAcc() {
   const accounts = await getAccounts();
   
