@@ -1,7 +1,8 @@
 import { defaultCategories } from '@/data/categories';
 import { getAccounts } from '@/server/dashboard'
 import React from 'react'
-import TransactionForm from '../_components/transactionForm';
+import { TransactionForm } from '../_components/transactionForm';
+
  
  export default async function CreateAcc() {
   const accounts = await getAccounts();

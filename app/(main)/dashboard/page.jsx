@@ -20,15 +20,16 @@ async function DashboardPage() {
   }
 
   return (
-    <div className='space-y-5'>
+    <div className='space-y-8'>
 
        {defaultAccount && <BudgetProgress
         intialBudget = {budgetData?.budget}
         currentExpense = {budgetData?.currentExpense || 0}/>}       
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <CreateAccDrawer>
-          <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer dark:border-gray-400 border-dashed flex flex-col justify-between">
             <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
+              
               <Plus className="h-10 w-10 mb-2" />
               <p className="text-sm font-medium">Add New Account</p>
             </CardContent>

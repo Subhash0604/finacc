@@ -141,7 +141,11 @@
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-  }                                 
+  }  
+  
+  
+
+  
 }
 
 
@@ -166,4 +170,28 @@
   animation: gradientAnimation 8s ease infinite;
   height: 4px;
   border-radius: 4px;
+}
+
+@keyframes gradientMove {
+  0%{
+    background-position: 0% 50%;
+  } 
+  50% {
+     background-position: 100% 50%; 
+  }
+  100% { 
+    background-position: 0% 50%; 
+  }
+}
+
+.animate-gradient {
+  @apply text-white font-semibold rounded-md px-4 py-2 relative overflow-hidden transition-all duration-300 shadow-md cursor-pointer;
+  background: linear-gradient(270deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
+  background-size: 600% 600%;
+  animation: gradientMove 8s ease infinite;
+}
+
+.animate-gradient:hover {
+  @apply scale-105 shadow-lg;
+  filter: brightness(1.1);
 }

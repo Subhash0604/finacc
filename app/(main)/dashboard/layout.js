@@ -12,11 +12,16 @@ const pageLayout = () => {
                     Dashboard
                 </h1>
             </div>
+            
             <Suspense
-                fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}
+                fallback={
+                <div className='gradient-bar'>
+                <BarLoader className="mt-4" width={"100%"}/> 
+                </div>}
             >
                 <DashboardPage />
             </Suspense>
+            
         </div>
     )
 }

@@ -5,12 +5,13 @@ import { Button } from './ui/button';
 import Image from 'next/image';
 import { LayoutDashboard, PenBox } from 'lucide-react';
 import { AuthUser } from '@/lib/AuthUser';
+import { ModeToggle } from '@/app/component/ModeToggle';
 
 const Header = async() => {
   const user = await AuthUser();
   console.log(user);
   return (
-    <header  className='fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b'>
+    <header  className='fixed top-0 w-full bg-white/80 dark:bg-black backdrop-blur-md z-50 border-b'>
       <nav className='container mx-auto px-4 py-4 flex items-center justify-between'>
      
         <Link href="/">
@@ -35,10 +36,10 @@ const Header = async() => {
           </SignedOut>
 
           <SignedIn>
-              <Link href={"/dashboard"} className='text-gray-600 hover:text-red-600 flex items-center gap-2'>
-                <Button variant="outline">
+              <Link href={"/dashboard"} className='text-gray-600 dark:text-white hover:text-red-600 flex items-center gap-2'>
+                <Button variant="outline" className='dark:border-white'>
                   <LayoutDashboard size={18}/>
-                  <span className='hidden md:inline'>
+                  <span className='hidden md:inline '>
                     Dashboard
                   </span>
                 </Button>
@@ -52,7 +53,7 @@ const Header = async() => {
                   </span>
                 </Button>
               </Link>
-
+              <ModeToggle/>
             <UserButton 
             appearance={{
               elements:{

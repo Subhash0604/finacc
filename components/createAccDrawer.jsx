@@ -67,10 +67,10 @@ const onSubmit =async(data) => {
 
           <div className="px-4 pb-4">
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-2">
+              <div className="space-y-2 ">
                 <label htmlFor="name" className="text-sm font-medium">Account Name</label>
-                <Input type="text" id="name" placeholder="e.g., Main" {...register("name")} />
-                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                <Input type="text" id="name" placeholder="e.g., Main" {...register("name")} className='dark:border-gray-400' />
+                {errors.name && <p className="text-sm  text-red-500">{errors.name.message}</p>}
               </div>
               <div className="space-y-2">
                 <label
@@ -95,12 +95,12 @@ const onSubmit =async(data) => {
                   <p className="text-sm text-red-500">{errors.type.message}</p>
                 )}
               </div>
-              <div className="space-y-2">
+              <div className="space-y-2 ">
                 <label htmlFor="balance" className="text-sm font-medium">Balance</label>
-                <Input type="number" id="balance" step="0.01" placeholder="0.00" {...register("balance")} />
+                <Input type="number" id="balance" step="0.01" placeholder="0.00" {...register("balance")} className='dark:border-gray-400' />
                 {errors.balance && <p className="text-sm text-red-500">{errors.balance.message}</p>}
               </div>
-              <div className="flex items-center justify-between rounded-lg border p-4">
+              <div className="flex items-center justify-between dark:border-gray-400 rounded-lg border p-4">
                 <div className="flex flex-col">
                   <label
                     htmlFor="isDefault"
@@ -113,6 +113,7 @@ const onSubmit =async(data) => {
                   </p>
                 </div>
                 <Switch
+                className='dark:border-white'
                   id="isDefault"
                   onCheckedChange={(checked) => setValue("isDefault", checked)}
                   checked={watch("isDefault")}
@@ -121,13 +122,13 @@ const onSubmit =async(data) => {
               <div>
                 <DrawerFooter className="flex flex-row justify-end gap-3">
                   <DrawerClose asChild>
-                    <Button type="button" variant="outline">
+                    <Button type="button" variant="outline" className='dark:border-white'>
                       Cancel
                     </Button>
                   </DrawerClose>
-                  <Button type="submit">
+                  <Button type="submit" >
                     { createAccountLoading ? (<>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin'/>
+                    <Loader2 className=' mr-2 h-4 w-4 animate-spin'/>
                     Creating... </>) : (
                       "Create Account"
                     )  }

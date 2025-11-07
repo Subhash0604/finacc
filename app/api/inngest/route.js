@@ -1,6 +1,6 @@
 import { serve } from "inngest/next";
-import { inngest } from '@/app/lib/inngest/client';
-import { checkBudget } from "@/app/lib/inngest/functions";
+import { inngest } from '@/lib/inngest/client';
+import { checkBudget } from "@/lib/inngest/functions";
 
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
