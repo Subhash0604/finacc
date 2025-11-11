@@ -10,7 +10,7 @@ import BudgetProgress from './_components/budget-dashboard'
 async function DashboardPage() {
 
   const accounts = await getAccounts();
-  // console.log(accounts);
+
 
   const defaultAccount = accounts.find(acc => acc.isDefault);
 
