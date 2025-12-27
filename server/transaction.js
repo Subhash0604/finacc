@@ -19,27 +19,30 @@ export async function addTransaction(data){
             const { userId } = await auth();
             if (!userId) throw new Error("Unauthorized");
             
-            const req = await request();
+            // const req = await request();
 
-            const decision = await aj.protect(req, {
-                userId,
-                requested:1
-            })
+            // const decision = await aj.protect(req, {
+            //     userId,
+            //     requested:1
+            // })
 
-            if(decision.isDenied()){
-                if(decision.reason.isRateLimit()){
-                    const { remaining, reset } = decision.reason;
-                    console.error({
-                        code: "RATE_LIMIT_EXCEEDED",
-                        details:{
-                            remaining,
-                            resetInseconds: reset,
-                        }
-                    })
+            // if(decision.isDenied()){
+            //     if(decision.reason.isRateLimit()){
+            //         const { remaining, reset } = decision.reason;
+            //         console.error({
+            //             code: "RATE_LIMIT_EXCEEDED",
+            //             details:{
+            //                 remaining,
+            //                 resetInseconds: reset,
+            //             }
+            //         })
 
-                    throw new Error("Too many requests. Please try again later.")
-                }
-                    throw new Error("Request Blocked")
+            //         throw new Error("Too many requests. Please try again later.")
+            //     }
+            //         throw new Error("Request Blocked")
+            // }
+            if (!data.isRecurring) {
+                    delete data.recurringInterval;
             }
 
             const user = await db.user.findUnique({
@@ -81,7 +84,7 @@ export async function addTransaction(data){
         })
 
         revalidatePath("/dashboard");
-        revalidatePath(`/account/${transaction.accountId}`);
+        revalidatePath(`/accounts/${transaction.accountId}`);
 
         return { success: true, data:serialize(transaction)}
         }catch(err){
@@ -110,94 +113,94 @@ export async function addTransaction(data){
     return date;
  }  
 
- export async function scanreceipt(file) {
-    try{
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"})
+//  export async function scanreceipt(file) {
+//     try{
+//         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash"})
 
-        const arrayBuffer = await file.arrayBuffer();
+//         const arrayBuffer = await file.arrayBuffer();
         
-        const base64String = Buffer.from(arrayBuffer).toString("base64")
+//         const base64String = Buffer.from(arrayBuffer).toString("base64")
 
-        const prompt = `Analyze this receipt image and extract the following information in JSON format:
-      - Total amount (just the number)
-      - Date (in ISO format)
-      - Description or items purchased (brief summary)
-      - Merchant/store name
-      - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense )
+//         const prompt = `Analyze this receipt image and extract the following information in JSON format:
+//       - Total amount (just the number)
+//       - Date (in ISO format)
+//       - Description or items purchased (brief summary)
+//       - Merchant/store name
+//       - Suggested category (one of: housing,transportation,groceries,utilities,entertainment,food,shopping,healthcare,education,personal,travel,insurance,gifts,bills,other-expense )
       
-      Only respond with valid JSON in this exact format:
-      {
-        "amount": number,
-        "date": "ISO date string",
-        "description": "string",
-        "merchantName": "string",
-        "category": "string"
-      }
+//       Only respond with valid JSON in this exact format:
+//       {
+//         "amount": number,
+//         "date": "ISO date string",
+//         "description": "string",
+//         "merchantName": "string",
+//         "category": "string"
+//       }
 
-      If its not a recipt, return an empty object`;
-const contents = [
-            {
-                role: "user",
-                parts: [
-                    {
-                        inlineData: {
-                            data: base64String,
-                            mimeType: file.type,
-                        },
-                    },
-                    { text: prompt },
-                ]
-            },
-        ];
+//       If its not a recipt, return an empty object`;
+// const contents = [
+//             {
+//                 role: "user",
+//                 parts: [
+//                     {
+//                         inlineData: {
+//                             data: base64String,
+//                             mimeType: file.type,
+//                         },
+//                     },
+//                     { text: prompt },
+//                 ]
+//             },
+//         ];
         
-        const res = await model.generateContent({
-            contents: contents,
-            generationConfig: {
-                responseMimeType: "application/json",
-            },
-        });
+//         const res = await model.generateContent({
+//             contents: contents,
+//             generationConfig: {
+//                 responseMimeType: "application/json",
+//             },
+//         });
         
-        // --- FIXES START HERE ---
+//         // --- FIXES START HERE ---
         
-        // 1. More robust check: The SDK places the final generated text on the 'text' property.
-        // It should be available if the API call was successful.
-        const text = res.text; 
+//         // 1. More robust check: The SDK places the final generated text on the 'text' property.
+//         // It should be available if the API call was successful.
+//         const text = res.text; 
         
-        if (!text) {
-            // Check if the model blocked the response (e.g., for safety)
-            if (res.candidates && res.candidates.length > 0 && res.candidates[0].finishReason === 'SAFETY') {
-                console.error("Gemini API blocked the response due to safety settings.");
-                throw new Error("Content was blocked by safety settings.");
-            }
-            // If the response is empty and not blocked, it's a general processing failure.
-            throw new Error("No text returned from Gemini. Image processing failed or response was empty.");
-        }
+//         if (!text) {
+//             // Check if the model blocked the response (e.g., for safety)
+//             if (res.candidates && res.candidates.length > 0 && res.candidates[0].finishReason === 'SAFETY') {
+//                 console.error("Gemini API blocked the response due to safety settings.");
+//                 throw new Error("Content was blocked by safety settings.");
+//             }
+//             // If the response is empty and not blocked, it's a general processing failure.
+//             throw new Error("No text returned from Gemini. Image processing failed or response was empty.");
+//         }
 
-        const cleanedText = text.trim(); 
+//         const cleanedText = text.trim(); 
         
-        // 2. Safety check for the empty object return
-        if (cleanedText === '{}' || cleanedText === '[]') {
-             console.log("Gemini returned an empty object, indicating the image was not a receipt.");
-             return {}; // Return an empty object to the client
-        }
+//         // 2. Safety check for the empty object return
+//         if (cleanedText === '{}' || cleanedText === '[]') {
+//              console.log("Gemini returned an empty object, indicating the image was not a receipt.");
+//              return {}; // Return an empty object to the client
+//         }
 
-         try{
-            const data = JSON.parse(cleanedText);
-            return{
-                amount: parseFloat(data.amount),
-                date: new Date(data.date),
-                description: data.description,
-                category: data.category,
-                merchantName: data.merchantName,
-            }
-         }catch(err){
-            console.error("Error parsing JSON response:", err);
-            throw new Error("Invalid response format from Gemini")
-         }
-    }
+//          try{
+//             const data = JSON.parse(cleanedText);
+//             return{
+//                 amount: parseFloat(data.amount),
+//                 date: new Date(data.date),
+//                 description: data.description,
+//                 category: data.category,
+//                 merchantName: data.merchantName,
+//             }
+//          }catch(err){
+//             console.error("Error parsing JSON response:", err);
+//             throw new Error("Invalid response format from Gemini")
+//          }
+//     }
    
-    catch(err){
-        console.error("Error Scanning receipt:", err.message);
-        throw new Error("Falied to Scan receipt")
-    }
- }      
+//     catch(err){
+//         console.error("Error Scanning receipt:", err.message);
+//         throw new Error("Falied to Scan receipt")
+//     }
+//  }      

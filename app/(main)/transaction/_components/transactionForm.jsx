@@ -76,7 +76,7 @@ export function TransactionForm({ accounts, categories }) {
     if (transactionResult?.success && !transactionLoading) {
       toast.success("Transaction created successfully");
       reset();
-      router.push(`/account/${transactionResult.data.accountId}`);
+      router.push(`/accounts/${transactionResult.data.accountId}`);
     }
     
   }, [transactionResult, transactionLoading]);
@@ -96,7 +96,7 @@ export function TransactionForm({ accounts, categories }) {
       className="space-y-6 max-w-3xl mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm rounded-2xl p-8"
     >
 
-     <RecieptScanner onScanComplete={handleScanComplete}/>
+     {/* <RecieptScanner onScanComplete={handleScanComplete}/> */}
       <h2 className="text-2xl font-semibold mb-2 text-neutral-900 dark:text-neutral-100">
         Create Transaction
       </h2>

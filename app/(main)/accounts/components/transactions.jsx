@@ -36,7 +36,7 @@ const TransactionTable = ({ transactions = [] }) => {
         direction: "desc",
 
     })
-    
+
     const [search, setSearch] = useState("");
     const [filterCategory, setFilterCategory] = useState("");
     const [recurringFilter, setRecurringFilter] = useState("");
@@ -142,7 +142,13 @@ const TransactionTable = ({ transactions = [] }) => {
                         placeholder='Search Transactions'
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className='pl-8' />
+                        className='pl-8 border-gray-300 dark:border-gray-600
+                                bg-white dark:bg-gray-800
+                                text-gray-900 dark:text-gray-100
+                                transition duration-300 ease-in-out
+                                focus:border-gray-300 dark:focus:border-white
+                                 focus:shadow-[0_0_8px_2px_rgba(200,200,200,0.5)]
+                                dark:focus:shadow-[0_0_10px_2px_rgba(255,255,255,0.7)]' />
                 </div>
 
                 <div className='flex gap-2'>
@@ -188,7 +194,7 @@ const TransactionTable = ({ transactions = [] }) => {
                     <TableHeader>
                         <TableRow>
                             <TableHead className="w-[50px]">
-                                <Checkbox onCheckedChange={handleSelectAll}
+                                <Checkbox className='dark:border-white' onCheckedChange={handleSelectAll}
                                     checked={selectIds.length === filterTransactions.length && filterTransactions.length > 0}
                                 />
                             </TableHead>
@@ -229,7 +235,7 @@ const TransactionTable = ({ transactions = [] }) => {
                         ) : (
                             paginatedTransactions.map((transaction) => (
                                 <TableRow key={transaction.id}>
-                                    <TableCell><Checkbox onCheckedChange={() => handleSelect(transaction.id)}
+                                    <TableCell><Checkbox className='dark:border-white' onCheckedChange={() => handleSelect(transaction.id)}
                                         checked={selectIds.includes(transaction.id)}
                                     /></TableCell>
                                     <TableCell>{format(new Date(transaction.date), 'dd MMM yyyy')}</TableCell>
@@ -306,29 +312,29 @@ const TransactionTable = ({ transactions = [] }) => {
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious href="#"
-                            onClick={(e) => {e.preventDefault(); setCurrentPage(p => Math.max(p, -1,1));}}
-                            disabled={currentPage === 1} />
-                            </PaginationItem>
-                            {Array.from({length: totalPages}, (_,i) => i + 1).map(page => (
-                        <PaginationItem key={page}>
-                            <PaginationLink href="#"
-                            isActive={currentPage === page}
-                            onClick={e => {e.preventDefault(); setCurrentPage(page)}}>{page}</PaginationLink>
+                                onClick={(e) => { e.preventDefault(); setCurrentPage(p => Math.max(p, -1, 1)); }}
+                                disabled={currentPage === 1} />
                         </PaginationItem>
-                            ))}
-                            {totalPages > 10 && <PaginationItem>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                            <PaginationItem key={page}>
+                                <PaginationLink href="#"
+                                    isActive={currentPage === page}
+                                    onClick={e => { e.preventDefault(); setCurrentPage(page) }}>{page}</PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        {totalPages > 10 && <PaginationItem>
                             <PaginationEllipsis />
-                        </PaginationItem>  }
-                        
+                        </PaginationItem>}
+
                         <PaginationItem>
-                            <PaginationNext href="#" onClick={e => {e.preventDefault(); setCurrentPage(p => Math.min(p +1, totalPages))}}
-                                disabled = {currentPage === totalPages}/>
+                            <PaginationNext href="#" onClick={e => { e.preventDefault(); setCurrentPage(p => Math.min(p + 1, totalPages)) }}
+                                disabled={currentPage === totalPages} />
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
             )}
         </div>
     )
-} 
+}
 
 export default TransactionTable
