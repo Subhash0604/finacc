@@ -55,6 +55,8 @@ export function TransactionForm({ accounts, categories }) {
     },
   });
 
+
+  //remved reciept scanner 
   const { loading: transactionLoading, fn: transactionFn, data: transactionResult } = useFetch(addTransaction);
 
   
