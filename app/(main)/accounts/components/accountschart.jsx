@@ -58,7 +58,7 @@ const AccountsChart = ({ transactions }) => {
     return (
 
 
-        <Card>
+        <Card className='dark:border-gray-400'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-7">
                 <CardTitle className='text-base font-normal'>Transaction Overview</CardTitle>
                 <Select defaultValue={dateRange} onValueChange={setDateRange}>

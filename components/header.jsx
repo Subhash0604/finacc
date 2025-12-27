@@ -11,7 +11,8 @@ const Header = async() => {
   const user = await AuthUser();
   console.log(user);
   return (
-    <header  className='fixed top-0 w-full bg-white/80 dark:bg-black backdrop-blur-md z-50 border-b'>
+    <header  className='fixed top-0 w-full bg-white/80 dark:bg-black backdrop-blur-md z-50 border-b  shadow-[0_4px_30px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_30px_rgba(255,255,255,0.1)]
+                       transition-all duration-300'>
       <nav className='container mx-auto px-4 py-4 flex items-center justify-between'>
      
         <Link href="/">
@@ -37,7 +38,7 @@ const Header = async() => {
 
           <SignedIn>
               <Link href={"/dashboard"} className='text-gray-600 dark:text-white hover:text-red-600 flex items-center gap-2'>
-                <Button variant="outline" className='dark:border-white'>
+                <Button variant="outline" className='dark:border-white glow-button'>
                   <LayoutDashboard size={18}/>
                   <span className='hidden md:inline '>
                     Dashboard
