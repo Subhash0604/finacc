@@ -55,6 +55,7 @@ export function TransactionForm({ accounts, categories }) {
     },
   });
 
+
   const { loading: transactionLoading, fn: transactionFn, data: transactionResult } = useFetch(addTransaction);
 
   
