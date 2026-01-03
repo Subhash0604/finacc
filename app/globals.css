@@ -122,77 +122,74 @@
 }
 
   
-@layer utilities{
-  .gradient{
-    @apply bg-gradient-to-br from-blue-600 to-purple-600
-}
+@layer utilities {
+  /* Background gradient (section backgrounds, buttons, etc.) */
+  .gradient {
+    @apply bg-gradient-to-br from-black to-white;
+  }
+
+  /* Animated gradient title text */
   .gradient-title {
-    background: linear-gradient(90deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
+    background: linear-gradient(90deg, #000000, #d9d9d9, #000000);
     -webkit-background-clip: text;
-    font-weight: 700;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
-    animation: gradientAnimation 8s ease infinite;
-    background-size: 400% 400%;
+    font-weight: 700;
+    background-size: 300% 300%;
+    animation: gradientAnimation 6s ease infinite;
   }
 
+  /* Keyframes for animated monochrome text gradient */
   @keyframes gradientAnimation {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
-  }  
-  
-  
-
-  
+  }
 }
 
-
+/* Perspective & hero image transitions unchanged */
 .hero-image-wrapper {
   perspective: 1000px;
-
 }
 
-.hero-image{
+.hero-image {
   transform: rotateX(15deg) scale(1);
   transition: transform 0.5s ease-out;
   will-change: transform;
 }
 
-.hero-image.scrolled{
+.hero-image.scrolled {
   transform: rotateX(0deg) scale(1) translateY(40px);
 }
 
+/* Animated gradient bar under titles */
 .gradient-bar {
-  background: linear-gradient(90deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
-  background-size: 400% 400%;
-  animation: gradientAnimation 8s ease infinite;
+  background: linear-gradient(90deg, #000000, #d9d9d9, #000000);
+  background-size: 300% 300%;
+  animation: gradientMove 6s ease infinite;
   height: 4px;
   border-radius: 4px;
 }
 
+/* Reused keyframes for bar animation */
 @keyframes gradientMove {
-  0%{
-    background-position: 0% 50%;
-  } 
-  50% {
-     background-position: 100% 50%; 
-  }
-  100% { 
-    background-position: 0% 50%; 
-  }
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
+
 
 .animate-gradient {
   @apply text-white font-semibold rounded-md px-4 py-2 relative overflow-hidden transition-all duration-300 shadow-md cursor-pointer;
-  background: linear-gradient(270deg, #FF6B6B, #FFD93D, #6BCB77, #4D96FF);
-  background-size: 600% 600%;
-  animation: gradientMove 8s ease infinite;
+
+   
+  background: linear-gradient(90deg, #000000 0%, #373636 40%, #323232 60%, #000000 100%);
 }
 
+ 
 .animate-gradient:hover {
   @apply scale-105 shadow-lg;
-  filter: brightness(1.1);
+  filter: brightness(1.12);
 }
 
