@@ -204,3 +204,71 @@ export async function addTransaction(data){
 //         throw new Error("Falied to Scan receipt")
 //     }
 //  }      
+
+
+async function fileToBase64(file) {
+  const buffer = Buffer.from(await file.arrayBuffer());
+  return buffer.toString("base64");
+}
+
+export async function scanReceipt(file) {
+  try {
+    if (!file) throw new Error("No file provided");
+
+    const base64Image = await fileToBase64(file);
+
+    const prompt = `
+Extract details from this receipt image and return **ONLY JSON** in the following format:
+
+{
+  "amount": number,
+  "date": "YYYY-MM-DD",
+  "description": "short summary of items or purpose",
+  "merchantName": "store name",
+  "category": "housing | transportation | groceries | utilities | entertainment | food | shopping | healthcare | education | personal | travel | insurance | gifts | bills | other-expense"
+}
+
+If the image is not a receipt, return an empty JSON object {}.
+Dates must be ISO-like. Amount must be numeric.
+`;
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+    const result = await model.generateContent({
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              inlineData: {
+                data: base64Image,
+                mimeType: file.type,
+              }
+            },
+            { text: prompt }
+          ]
+        }
+      ],
+      generationConfig: {
+        responseMimeType: "application/json"
+      }
+    });
+
+    const text = result.response.text().trim();
+    if (text === "{}") return {};
+
+    const parsed = JSON.parse(text);
+
+    return {
+      amount: Number(parsed.amount),
+      date: parsed.date ? new Date(parsed.date) : null,
+      description: parsed.description ?? "",
+      merchantName: parsed.merchantName ?? "",
+      category: parsed.category ?? "",
+    };
+
+  } catch (err) {
+    console.error("SCAN RECEIPT ERROR:", err);
+    throw new Error("Failed to scan receipt");
+  }
+}
