@@ -6,7 +6,7 @@ import { auth } from "@clerk/nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
 
-//added cron jobs in inngest funxtion 
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const serialize = (obj) => ({
