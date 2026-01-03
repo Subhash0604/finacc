@@ -89,7 +89,21 @@ export function TransactionForm({ accounts, categories }) {
   const filteredCategories = categories.filter((category) => category.type === type);
 
   const handleScanComplete = (scanData) => {
-    console.log(scanData)
+    if (!scanData || Object.keys(scanData).length === 0) {
+      toast.error("Could not read receipt");
+      return;
+    }
+
+    const matched = categories.find(
+      (c) => c.name.toLowerCase() === scanData.category?.toLowerCase()
+    );
+
+    setValue("amount", scanData.amount ? String(scanData.amount) : "");
+    setValue("description", scanData.description || "");
+    setValue("date", scanData.date ? new Date(scanData.date) : new Date());
+    if (matched) setValue("category", matched.id);
+
+    toast.success("Receipt scanned and form populated");
   }
   return (
     <form
@@ -97,7 +111,7 @@ export function TransactionForm({ accounts, categories }) {
       className="space-y-6 max-w-3xl mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm rounded-2xl p-8"
     >
 
-     {/* <RecieptScanner onScanComplete={handleScanComplete}/> */}
+     <RecieptScanner onScanComplete={handleScanComplete}/>
       <h2 className="text-2xl font-semibold mb-2 text-neutral-900 dark:text-neutral-100">
         Create Transaction
       </h2>
