@@ -273,3 +273,95 @@ Dates must be ISO-like. Amount must be numeric.
     throw new Error("Failed to scan receipt");
   }
 }
+
+export async function fetchTransactions(id){
+  const { userId } = await auth();
+  if(!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where:{ clerkUserId: userId }
+  });
+
+  if(!user) throw new Error("Unauthorized");
+   
+  const transaction = await db.transaction.findUnique({
+    where: {
+      id: id,
+      userId: user.id,
+    }
+  });
+
+  if(!transaction) throw new Error("Transaction not found");
+
+  return serialize(transaction);
+}
+
+
+export async function updateTransaction(id, data){
+  try{
+
+      if(id?.startsWith("/")){
+        id = id.slice(1);
+      }
+
+      const { userId } = await auth();
+  if(!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where:{ clerkUserId: userId }
+  });
+
+  if(!user) throw new Error("Unauthorized");
+
+   const intialTransaction = await db.transaction.findUnique({
+        where: {
+          id,
+          userId: user.id,
+
+        },  
+        include: {
+          account: true,
+        },
+      });
+      if(!intialTransaction) throw new Error("Transaction not found");
+        const Oldbalance = intialTransaction.type === "EXPENSE"
+          ? -intialTransaction.amount.toNumber() : intialTransaction.amount.toNumber();
+
+          const newBalance = data.type === "EXPENSE" ? -data.amount: data.amount;
+
+          const netBalance = newBalance - Oldbalance;
+
+          const transaction = await db.$transaction(async(tx) => {
+            const updated = await tx.transaction.update({
+              where: {
+                id,
+                userId: user.id,
+              },
+              data: {
+                ...data,
+                nextRecurringDate: data.isRecurring && data.recurringInterval ? calculateNextRecurringDate(data.date, data.recurringInterval): null,
+              },
+            });
+
+            await tx.account.update({
+              where: {
+                id: data.accountId
+               },
+               data: {
+                balance:{
+                  increment: netBalance,
+                },
+               },
+            });
+            return updated;
+          });
+          revalidatePath("/dashboard");
+          revalidatePath(`/accounts/${data.accountId}`);
+
+
+        return { success: true, data: serialize(transaction)
+        };
+  }catch(err){
+      throw new Error(err.message);
+  }
+}

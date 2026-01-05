@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 
 import { transactionSchema } from "@/app/lib/schema";
 import useFetch from "@/hooks/use-fetch";
@@ -26,12 +26,18 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Switch } from "@/components/ui/switch";
 import CreateAccDrawer from "@/components/CreateAccDrawer";
-import { useRouter } from "next/navigation";
-import { addTransaction } from "@/server/transaction";
+import { useRouter, useSearchParams } from "next/navigation";
+import { addTransaction, updateTransaction } from "@/server/transaction";
 import { toast } from "sonner";
 import RecieptScanner from "./recieptscanner";
 
-export function TransactionForm({ accounts, categories }) {
+export function TransactionForm({ accounts, categories, editMode=false, intialData=null }) {
+
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const transactionId = searchParams.get('edit');
+
   const {
     register,
     control,
@@ -43,25 +49,30 @@ export function TransactionForm({ accounts, categories }) {
     reset,
   } = useForm({
     resolver: zodResolver(transactionSchema),
-    defaultValues: {
+    defaultValues:
+    editMode && intialData ? {
+        type: intialData.type,
+        amount: intialData.amount.toString(),
+        description: intialData.description,
+        accountId: intialData.accountId,  
+        date: new Date(intialData.date),
+        isRecurring: intialData.isRecurring,
+        ...(intialData.recurringInterval && {
+          recurringInterval: intialData.recurringInterval,
+        }) , 
+    } : 
+    {
       type: "EXPENSE",
       amount: "",
       description: "",
       accountId: accounts.find((ac) => ac.isDefault)?.id,
       date: new Date(),
       isRecurring: false,
-      recurringInterval: "",
-      category: "",
     },
   });
 
 
-  const { loading: transactionLoading, fn: transactionFn, data: transactionResult } = useFetch(addTransaction);
-
-  
-
-  const router = useRouter();
-
+  const { loading: transactionLoading, fn: transactionFn, data: transactionResult } = useFetch(editMode ? updateTransaction : addTransaction);
 
 
   const onSubmit =  (data) => {
@@ -69,18 +80,22 @@ export function TransactionForm({ accounts, categories }) {
       ...data,
       amount: parseFloat(data.amount),
     };
-     transactionFn(formData);
+    if(editMode){
+      transactionFn(transactionId, formData);
+    }else{
+      transactionFn(formData);
+    }
   };
 
  
   useEffect(() => {
     if (transactionResult?.success && !transactionLoading) {
-      toast.success("Transaction created successfully");
+      toast.success(editMode ? "Transaction updated successfully":"Transaction created successfully");
       reset();
       router.push(`/accounts/${transactionResult.data.accountId}`);
     }
     
-  }, [transactionResult, transactionLoading]);
+  }, [transactionResult, transactionLoading, editMode]);
 
   const type = watch("type");
   const isRecurring = watch("isRecurring");
@@ -111,14 +126,25 @@ export function TransactionForm({ accounts, categories }) {
       className="space-y-6 max-w-3xl mx-auto bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm rounded-2xl p-8"
     >
 
-     <RecieptScanner onScanComplete={handleScanComplete}/>
-      <h2 className="text-2xl font-semibold mb-2 text-neutral-900 dark:text-neutral-100">
-        Create Transaction
-      </h2>
-      <p className="text-sm text-neutral-500 mb-6">
-        Record an income or expense, select its account, category, and schedule.
-      </p>
-    
+     { !editMode && <RecieptScanner onScanComplete={handleScanComplete}/> }
+
+     {editMode &&  (
+      <div className="p-4 bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700">
+        You are editing an existing transaction. Changes will be applied to this transaction.
+      </div>
+     )}
+
+     {!editMode && (
+  <>
+    <h2 className="text-2xl font-semibold mb-2 text-neutral-900 dark:text-neutral-100">
+      Create Transaction
+    </h2>
+    <p className="text-sm text-neutral-500 mb-6">
+      Record an income or expense, select its account, category, and schedule.
+    </p>
+  </>
+)}
+
       <Controller
         name="type"
         control={control}
@@ -286,7 +312,16 @@ export function TransactionForm({ accounts, categories }) {
     <div className="flex gap-2">
       <Button variant="outline" className="" type='button' onClick={() => router.back()}>Cancel</Button>
       <Button type="submit" disabled={transactionLoading} className="cursor-pointer text-base font-medium hover:bg-gray-700 ">
-        {transactionLoading ? "Saving..." : "Save Transaction"}
+        {transactionLoading ? (
+          <>
+            {" "}
+            <Loader2 className="mr-2 h-4 w-4 animate-spin"/>{editMode ? "Updating..." : "Creating..."}
+          </>
+        ): editMode ? (
+          "Update Transaction "
+        ): (
+          "Create Transaction"
+        )}
       </Button>
       </div>
     </form>
