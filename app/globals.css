@@ -130,14 +130,14 @@
 
   /* Animated gradient title text */
   .gradient-title {
-    background: linear-gradient(90deg, #000000, #d9d9d9, #000000);
+    background: linear-gradient(90deg, #403e3e, #d9d9d9, #393838);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     text-fill-color: transparent;
     font-weight: 700;
     background-size: 300% 300%;
-    animation: gradientAnimation 6s ease infinite;
+    /* animation: gradientAnimation 6s ease infinite;  */
   }
 
   /* Keyframes for animated monochrome text gradient */
@@ -165,7 +165,7 @@
 
 /* Animated gradient bar under titles */
 .gradient-bar {
-  background: linear-gradient(90deg, #000000, #d9d9d9, #000000);
+  background: linear-gradient(90deg, #363434, #d9d9d9, #393838);
   background-size: 300% 300%;
   animation: gradientMove 6s ease infinite;
   height: 4px;
