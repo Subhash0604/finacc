@@ -128,6 +128,23 @@ const TransactionTable = ({ transactions = [] }) => {
         setRecurringFilter("");
         setSelectIds([]);
     }
+
+    const getVisiblePages = () => {
+        let delta = 2;
+        if (typeof window !== "undefined") {
+            if (window.innerWidth < 640) delta = 0;
+            else if (window.innerWidth < 1024) delta = 1;
+        }
+
+        const start = Math.max(1, currentPage - delta);
+        const end = Math.min(totalPages, currentPage + delta);
+
+        return Array.from(
+            { length: end - start + 1 },
+            (_, i) => start + i
+        );
+    };
+
     return (
         <div className='space-y-4'>
             {deleteLoading && (
@@ -307,32 +324,60 @@ const TransactionTable = ({ transactions = [] }) => {
             </div>
 
             {totalPages > 1 && (
-
                 <Pagination>
-                    <PaginationContent>
+                    <PaginationContent className="flex flex-wrap justify-center gap-1">
                         <PaginationItem>
-                            <PaginationPrevious href="#"
-                                onClick={(e) => { e.preventDefault(); setCurrentPage(p => Math.max(p, -1, 1)); }}
-                                disabled={currentPage === 1} />
+                            <PaginationPrevious
+                                href="#"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    setCurrentPage(p => Math.max(p - 1, 1));
+                                }}
+                                disabled={currentPage === 1}
+                            />
                         </PaginationItem>
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+
+                        {getVisiblePages()[0] > 1 && (
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                        )}
+
+                        {getVisiblePages().map(page => (
                             <PaginationItem key={page}>
-                                <PaginationLink href="#"
+                                <PaginationLink
+                                    href="#"
                                     isActive={currentPage === page}
-                                    onClick={e => { e.preventDefault(); setCurrentPage(page) }}>{page}</PaginationLink>
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        setCurrentPage(page);
+                                    }}
+                                >
+                                    {page}
+                                </PaginationLink>
                             </PaginationItem>
                         ))}
-                        {totalPages > 10 && <PaginationItem>
-                            <PaginationEllipsis />
-                        </PaginationItem>}
+
+                        {getVisiblePages().slice(-1)[0] < totalPages && (
+                            <PaginationItem>
+                                <PaginationEllipsis />
+                            </PaginationItem>
+                        )}
 
                         <PaginationItem>
-                            <PaginationNext href="#" onClick={e => { e.preventDefault(); setCurrentPage(p => Math.min(p + 1, totalPages)) }}
-                                disabled={currentPage === totalPages} />
+                            <PaginationNext
+                                href="#"
+                                onClick={e => {
+                                    e.preventDefault();
+                                    setCurrentPage(p => Math.min(p + 1, totalPages));
+                                }}
+                                disabled={currentPage === totalPages}
+                            />
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
             )}
+
         </div>
     )
 }
