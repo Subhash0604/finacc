@@ -18,7 +18,8 @@ export async function addTransaction(data){
     try {
             const { userId } = await auth();
             if (!userId) throw new Error("Unauthorized");
-            
+
+            // used arcjet for ratelimitin
             // const req = await request();
 
             // const decision = await aj.protect(req, {
@@ -41,6 +42,8 @@ export async function addTransaction(data){
             //     }
             //         throw new Error("Request Blocked")
             // }
+
+        
             if (!data.isRecurring) {
                     delete data.recurringInterval;
             }
