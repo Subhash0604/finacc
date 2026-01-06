@@ -19,7 +19,7 @@ export default function Email({
    
   },
 }) {
-  //
+
   if (type === "budget-alert") {
     return (
       <Html>
