@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 import CreateAccDrawer from '@/components/CreateAccDrawer'
 import { Card, CardContent } from '@/components/ui/card'
 import { Plus } from 'lucide-react'
-import { getAccounts } from '@/server/dashboard'
+import { DashboardData, getAccounts } from '@/server/dashboard'
 import AccountCard from './_components/account-card'
 import { getBudgetSummary } from '@/server/budget'
 import BudgetProgress from './_components/budget-dashboard'
+import DashBoardOverview from './_components/DashBoardOverview'
 
 async function DashboardPage() {
 
@@ -19,12 +20,26 @@ async function DashboardPage() {
     budgetData = await getBudgetSummary(defaultAccount.id);
   }
 
-  return (
-    <div className='space-y-8'>
+  const transactions = await DashboardData();
 
+  return (
+
+    // MonthyBudgetProgress
+
+    <div className='space-y-8'>
        {defaultAccount && <BudgetProgress
         intialBudget = {budgetData?.budget}
-        currentExpense = {budgetData?.currentExpense || 0}/>}       
+        currentExpense = {budgetData?.currentExpense || 0}/>}   
+
+        {/* DashBoard PieCharts */}
+        <Suspense fallback={"Loading Overview..."}>
+            <DashBoardOverview
+            accounts={accounts}
+            transactions={transactions || []}
+            />
+        </Suspense>
+
+        {/* AccountCard */}
        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <CreateAccDrawer>
           <Card className="hover:shadow-md transition-shadow cursor-pointer dark:border-gray-400 border-dashed flex flex-col justify-between">
