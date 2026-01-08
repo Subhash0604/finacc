@@ -18,7 +18,7 @@ const useFetch = (callback)=>{
             const response = await callback(...args);
             setData(response);
             setError(null);
-            
+            return response;
         }catch(error){
             setError(error);
             toast.error("Something went wrong!");
