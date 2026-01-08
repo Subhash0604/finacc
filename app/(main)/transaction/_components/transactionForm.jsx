@@ -75,15 +75,15 @@ export function TransactionForm({ accounts, categories, editMode=false, intialDa
   const { loading: transactionLoading, fn: transactionFn, data: transactionResult } = useFetch(editMode ? updateTransaction : addTransaction);
 
 
-  const onSubmit =  (data) => {
+  const onSubmit =  async(data) => {
     const formData = {
       ...data,
       amount: parseFloat(data.amount),
     };
     if(editMode){
-      transactionFn(transactionId, formData);
+      await transactionFn(transactionId, formData);
     }else{
-      transactionFn(formData);
+      await transactionFn(formData);
     }
   };
 
