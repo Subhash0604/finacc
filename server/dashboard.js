@@ -19,7 +19,6 @@ const serialize = (obj) => {
     return serialized;
 }
 
-
 export async function createAcc(data) {
 
     try {
