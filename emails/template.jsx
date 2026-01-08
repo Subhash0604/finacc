@@ -14,11 +14,125 @@ import * as React from "react";
 
 export default function Email({
   userName = "",
-  type = "budget-alert",
+  // type = "budget-alert",
+  type = "monthly-report",
   data = {
-   
-  },
+
+  }
 }) {
+
+  if (type === "monthly-report") {
+  const net =
+    (data?.stats?.totalIncome ?? 0) -
+    (data?.stats?.totalExpenses ?? 0);
+
+  return (
+    <Html>
+      <Head />
+      <Preview>Your Monthly Financial Report</Preview>
+      <Body style={styles.body}>
+        <Container style={styles.mainContainer}>
+        
+          <Section style={styles.header}>
+            <Heading style={styles.brand}>Finac</Heading>
+          </Section>
+
+           
+          <Section style={styles.contentContainer}>
+            <Heading style={styles.title}>Monthly Financial Report</Heading>
+
+            <Text style={styles.text}>
+              Hi <strong>{userName}</strong>,
+            </Text>
+            <Text style={styles.text}>
+              Here’s a summary of your finances for{" "}
+              <strong>{data?.month}</strong>.
+            </Text>
+ 
+            <Section style={styles.statsCard}>
+              <div style={styles.statRow}>
+                <Text style={styles.label}>Total Income</Text>
+                <Text style={styles.value}>
+                  ${(data?.stats?.totalIncome ?? 0).toLocaleString()}
+                </Text>
+              </div>
+              <Hr style={styles.divider} />
+
+              <div style={styles.statRow}>
+                <Text style={styles.label}>Total Expenses</Text>
+                <Text style={styles.value}>
+                  ${(data?.stats?.totalExpenses ?? 0).toLocaleString()}
+                </Text>
+              </div>
+              <Hr style={styles.divider} />
+
+              <div style={styles.statRow}>
+                <Text style={styles.label}>Net Savings</Text>
+                <Text
+                  style={{
+                    ...styles.value,
+                    color: net >= 0 ? "#0b5fff" : "#dc2626",
+                    fontWeight: "700",
+                  }}
+                >
+                  ${net.toLocaleString()}
+                </Text>
+              </div>
+            </Section>
+ 
+            {data?.stats?.byCategory && (
+              <Section style={styles.statsCard}>
+                <Text style={{ ...styles.value, marginBottom: "12px" }}>
+                  Expenses by Category
+                </Text>
+
+                {Object.entries(data.stats.byCategory).map(
+                  ([category, amount]) => (
+                    <div key={category} style={styles.statRow}>
+                      <Text style={styles.label}>{category}</Text>
+                      <Text style={styles.value}>
+                        ${Number(amount).toLocaleString()}
+                      </Text>
+                    </div>
+                  )
+                )}
+              </Section>
+            )}
+
+           
+            {data?.insights?.length > 0 && (
+              <Section style={styles.statsCard}>
+                <Text style={{ ...styles.value, marginBottom: "10px" }}>
+                  Smart Insights
+                </Text>
+
+                {data.insights.map((insight, index) => (
+                  <Text key={index} style={styles.text}>
+                    • {insight}
+                  </Text>
+                ))}
+              </Section>
+            )}
+
+            <Text style={styles.footerNote}>
+              This report is generated automatically based on your tracked
+              transactions.
+            </Text>
+          </Section>
+
+           
+          <Section style={styles.footer}>
+            <Text style={styles.footerText}>
+              © {new Date().getFullYear()} Finac Inc.
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+}
+
+
   if (type === "budget-alert") {
     return (
       <Html>
@@ -67,13 +181,6 @@ export default function Email({
                     ${(data?.budgetAmount - data?.totalExpenses).toLocaleString()}
                   </Text>
                 </div>
-              </Section>
-
-              {/* CTA BUTTON */}
-              <Section style={styles.ctaContainer}>
-                <a href="https://finac.app/dashboard" style={styles.button}>
-                  View My Dashboard
-                </a>
               </Section>
 
               <Text style={styles.footerNote}>
