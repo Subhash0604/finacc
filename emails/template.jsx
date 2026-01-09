@@ -18,6 +18,7 @@ export default function Email({
   type = "monthly-report",
   data = {
   }
+  
 }) {
 
   if (type === "monthly-report") {
