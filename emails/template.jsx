@@ -17,7 +17,6 @@ export default function Email({
   // type = "budget-alert",
   type = "monthly-report",
   data = {
-
   }
 }) {
 
